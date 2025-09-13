@@ -8,6 +8,7 @@ const chat = require("./models/chat.js");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.urlencoded({ extended: true }));
 
 main()
   .then(() => {
@@ -50,6 +51,25 @@ app.get("/chat/new", (req, res) => {
   res.render("new.ejs");
 });
 
+// Create  route (post)
+app.post("/chat", (req, res) => {
+  let { from, to, msg } = req.body;
+  let newchat = new chat({
+    from: from,
+    to: to,
+    msg: msg,
+    created_at: Date(),
+  });
+  newchat
+    .save()
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  res.redirect("/chats");
+});
 app.listen(port, () => {
   console.log("server is listening to the port 8080");
 });
