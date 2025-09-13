@@ -34,6 +34,7 @@ async function main() {
 //     console.log(err);
 //   });
 
+// index route
 app.get("/chats", async (req, res) => {
   let chats = await chat.find();
   res.render("index.ejs", { chats });
@@ -41,6 +42,12 @@ app.get("/chats", async (req, res) => {
 });
 app.get("/", (req, res) => {
   res.send("server working well");
+});
+
+// new route
+
+app.get("/chat/new", (req, res) => {
+  res.render("new.ejs");
 });
 
 app.listen(port, () => {
