@@ -4,12 +4,13 @@ const port = 8080;
 const mongoose = require("mongoose");
 const path = require("path");
 const chat = require("./models/chat.js");
+const methodOverride = require("method-override");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
-
+app.use(methodOverride("_method"));
 main()
   .then(() => {
     console.log("connections sucessful");
@@ -70,6 +71,30 @@ app.post("/chat", (req, res) => {
     });
   res.redirect("/chats");
 });
+
+// Edit  route
+
+app.get("/chats/:id/edit", async (req, res) => {
+  let { id } = req.params;
+
+  let chats = await chat.findById(id);
+  // console.log(chats);
+  res.render("edit.ejs", { chats });
+});
+
+// Update route
+app.put("/chats/:id", async (req, res) => {
+  let { id } = req.params;
+
+  let { msg: newMsg } = req.body;
+  let UpdatedChat = await chat.findByIdAndUpdate(
+    id,
+    { msg: newMsg },
+    { runValidators: true, new: true }
+  );
+  res.redirect("/chats");
+});
+
 app.listen(port, () => {
   console.log("server is listening to the port 8080");
 });
