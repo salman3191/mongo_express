@@ -25,6 +25,14 @@
       <p><%= chat.created_at.toString().split(" ")[4] %></p>
 
       <p><%= chat.created_at.toString().split(" ").slice(0,4).join("-") %></p>
+      <br />
+      <form method="post" action="/chats/<%= chat.id %>?_method=DELETE">
+        <button
+          style="background-color: #287467; border-radius: 8px; color: white"
+        >
+          <i>Delete chat</i>
+        </button>
+      </form>
     </div>
     <br />
     <br />
