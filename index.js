@@ -126,6 +126,14 @@ app.delete("/chats/:id", async (req, res) => {
   res.redirect("/chats");
 });
 
+app.use((err, req, res, next) => {
+  console.log(err.name);
+  if (error.name === "ValidationError") {
+    console.log("this is validation error");
+  }
+  next(err);
+});
+
 // error handling middleware
 app.use((err, req, res, next) => {
   let { status = 500, message = "some error occured" } = err;
