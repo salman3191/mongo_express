@@ -54,23 +54,21 @@ app.get("/chat/new", (req, res) => {
 });
 
 // Create  route (post)
-app.post("/chat", (req, res) => {
-  let { from, to, msg } = req.body;
-  let newchat = new chat({
-    from: from,
-    to: to,
-    msg: msg,
-    created_at: Date(),
-  });
-  newchat
-    .save()
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
+app.post("/chat", async (req, res, next) => {
+  try {
+    let { from, to, msg } = req.body;
+    let newchat = new chat({
+      from: from,
+      to: to,
+      msg: msg,
+      created_at: Date(),
     });
-  res.redirect("/chats");
+    await newchat.save();
+
+    res.redirect("/chats");
+  } catch (err) {
+    next(err);
+  }
 });
 
 // NEW show-route
@@ -87,11 +85,15 @@ app.get("/chats/:id", async (req, res, next) => {
 
 // Edit  route
 app.get("/chats/:id/edit", async (req, res) => {
-  let { id } = req.params;
+  try {
+    let { id } = req.params;
 
-  let chats = await chat.findById(id);
-  // console.log(chats);
-  res.render("edit.ejs", { chats });
+    let chats = await chat.findById(id);
+    // console.log(chats);
+    res.render("edit.ejs", { chats });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Update route
