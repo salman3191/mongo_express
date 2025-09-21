@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const path = require("path");
 const chat = require("./models/chat.js");
 const methodOverride = require("method-override");
+const ExpressError = require("./ExpressError");
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -18,7 +19,7 @@ main()
   .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/whatsapp");
+  await mongoose.connect("mongodb://127.0.0.1:27017/fakewhatsapp");
 }
 
 // let chat1 = new chat({
@@ -72,8 +73,19 @@ app.post("/chat", (req, res) => {
   res.redirect("/chats");
 });
 
-// Edit  route
+// NEW show-route
+app.get("/chats/:id", async (req, res, next) => {
+  let { id } = req.params;
 
+  let chats = await chat.findById(id);
+  if (!chats) {
+    return next(new ExpressError(404, "chat not found"));
+  }
+
+  res.render("edit.ejs", { chats });
+});
+
+// Edit  route
 app.get("/chats/:id/edit", async (req, res) => {
   let { id } = req.params;
 
@@ -102,6 +114,12 @@ app.delete("/chats/:id", async (req, res) => {
   let DeleteChat = await chat.findByIdAndDelete(id);
   console.log(DeleteChat);
   res.redirect("/chats");
+});
+
+// error handling middleware
+app.use((err, req, res, next) => {
+  let { status = 500, message = "some error occured" } = err;
+  res.status(status).send(message);
 });
 
 app.listen(port, () => {
